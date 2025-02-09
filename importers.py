@@ -20,20 +20,23 @@ class GLSImporter(csvbase.Importer):
     payee = csvbase.Column('Name Zahlungsbeteiligter')
     amount = csvbase.Amount('Betrag', subs = {',': '.'})
 
-    def __init__(self, target_account, filename_part):
+    def __init__(self, name, target_account, filename_part):
         self.dialect = SemicolonCSV()
-        self.importer_account = target_account
         self.currency = 'EUR'
         self.flag = '*'
-        self.filename_part = filename_part
+
+        self.importer_account = target_account
+
+        self._name = name
+        self._filename_part = filename_part
 
     @property
     def name(self):
-        return 'GLS Importer for ' + self.filename_part
+        return self._name
 
     def identify(self, filepath):
         mimetype, encoding = mimetypes.guess_type(filepath)
         if mimetype != 'text/csv':
             return False
         else:
-            return self.filename_part in filepath
+            return self._filename_part in filepath
