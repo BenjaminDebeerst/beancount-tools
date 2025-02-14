@@ -1,4 +1,5 @@
 from csv import Dialect
+import re
 
 from beangulp import mimetypes
 from beangulp.importers import csvbase
@@ -40,3 +41,32 @@ class GLSImporter(csvbase.Importer):
             return False
         else:
             return self._filename_part in filepath
+
+
+class BPGOImporter(csvbase.Importer):
+    '''
+    Importer for BPGO
+    '''
+    date = csvbase.Date('Date de comptabilisation', '%d/%m/%Y')
+    amount = csvbase.CreditOrDebit(credit='Credit', debit='Debit', subs = {',': '.', '-': ''})
+    narration = csvbase.Columns('Libelle operation', 'Informations complementaires', 'Type operation')
+
+    def __init__(self, target_account):
+        self.dialect = SemicolonCSV()
+        self.currency = 'EUR'
+        self.flag = '*'
+
+        self.importer_account = target_account
+
+    @property
+    def name(self):
+        return "BPGO"
+
+    _pattern = re.compile('.*\d{8}_\d{7}\.csv')
+
+    def identify(self, filepath):
+        mimetype, encoding = mimetypes.guess_type(filepath)
+        if mimetype != 'text/csv':
+            return False
+        else:
+            return self._pattern.match(filepath) is not None
