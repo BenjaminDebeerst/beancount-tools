@@ -49,7 +49,7 @@ class GLSImporter(csvbase.Importer):
     date = csvbase.Date('Buchungstag', '%d.%m.%Y')
     narration = csvbase.Column('Verwendungszweck')
     payee = csvbase.Column('Name Zahlungsbeteiligter')
-    amount = csvbase.Amount('Betrag', subs = {',': '.'})
+    amount = csvbase.Amount('Betrag', subs = { '\\.?(\\d{1,3}),': '\\1.', })
 
     def __init__(self, name, target_account, filename_part):
         self.dialect = SemicolonCSV()
@@ -78,7 +78,7 @@ class BPGOImporter(csvbase.Importer):
     Importer for BPGO
     '''
     date = csvbase.Date('Date de comptabilisation', '%d/%m/%Y')
-    amount = CreditOrDebit(credit='Credit', debit='Debit', subs = {',': '.', '-': ''})
+    amount = CreditOrDebit(credit='Credit', debit='Debit', subs = { '\\.?(\\d{1,3}),': '\\1.', '-': ''})
     narration = csvbase.Columns('Libelle operation', 'Informations complementaires', 'Type operation')
 
     def __init__(self, target_account):
@@ -100,3 +100,35 @@ class BPGOImporter(csvbase.Importer):
             return False
         else:
             return self._pattern.match(filepath) is not None
+
+class INGImporter(csvbase.Importer):
+    '''
+    Importer for ING Bank.
+    '''
+    date = csvbase.Date('Buchung', '%d.%m.%Y')
+    narration = csvbase.Columns('Verwendungszweck', "Buchungstext")
+    payee = csvbase.Column('Auftraggeber/Empfänger')
+    amount = csvbase.Amount('Betrag', subs = { '\\.?(\\d{1,3}),': '\\1.', })
+
+    def __init__(self, name, target_account, filename_part):
+        self.encoding = 'latin-1'
+        self.skiplines = 13
+        self.dialect = SemicolonCSV()
+        self.currency = 'EUR'
+        self.flag = '*'
+
+        self.importer_account = target_account
+
+        self._name = name
+        self._filename_part = filename_part
+
+    @property
+    def name(self):
+        return self._name
+
+    def identify(self, filepath):
+        mimetype, encoding = mimetypes.guess_type(filepath)
+        if mimetype != 'text/csv':
+            return False
+        else:
+            return self._filename_part in filepath
