@@ -3,6 +3,30 @@ import re
 
 from beangulp import mimetypes
 from beangulp.importers import csvbase
+from beancount.core import data
+
+class RegExCategorizer:
+    """
+    Transaction post-processor to automatically categorize a transaction, i.e.
+    add an amount-less posting to another account (typically an Expense
+    account).
+
+    Add to a given importer by setting importer.finalize = categorizer.run.
+
+    Args:
+      matchers: An iterable of (pattern, account) tuples. The patterns are
+        searched for in the transaction's narration using `re.search`. A
+        posting to the given account is added upon the first match.
+    """
+    def __init__(self, matchers):
+        self.matchers = matchers if matchers is not None else []
+
+    def run(self, txn, row):
+        for (pattern, account) in self.matchers:
+            if re.search(pattern, txn.narration):
+                txn.postings.append(data.Posting(account, None, None, None, None, None))
+                return txn
+        return txn
 
 # Copied from beangulp 0.3.0-dev in order to be able to run on a released version
 # TODO remove and replace with csvbase.CreditOrDebit once 0.3.0 is released
