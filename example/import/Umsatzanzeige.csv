@@ -1,0 +1,16 @@
+Umsatzanzeige;Datei erstellt am: 26.02.2025 21:00
+
+IBAN;DE00 0000 0000 0000 0000 00
+Kontoname;Konto
+Bank;ING
+Kunde;Mustermensch
+Zeitraum;26.11.2024 - 26.02.2025
+Saldo;1200,00;EUR
+
+Sortierung;Datum absteigend
+
+In der CSV-Datei finden Sie alle bereits gebuchten Umsätze. Die vorgemerkten Umsätze werden nicht aufgenommen, auch wenn sie in Ihrem Internetbanking angezeigt werden.
+
+Buchung;Wertstellungsdatum;Auftraggeber/Empfänger;Buchungstext;Verwendungszweck;Saldo;Währung;Betrag;Währung
+30.01.2025;30.01.2025;;;Rent;1.200,00;EUR;-700,00;EUR
+27.01.2024;27.01.2024;;;Supermarket sagt Dankeschön;1.900,00;EUR;-23,42;EUR

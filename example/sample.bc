@@ -9,5 +9,6 @@ option "documents" "./doc"
 2010-01-01 open Assets:Sample:Two
 2010-01-01 open Assets:Sample:Three
 
+2010-01-01 open Income:Salary
 2010-01-01 open Expenses:Sample:Groceries
 2010-01-01 open Expenses:Sample:Rent
